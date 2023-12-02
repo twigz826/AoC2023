@@ -4,6 +4,17 @@ namespace AoC.Core.Day1
 {
     public static class CalibrationValueCalculator
     {
+        public static int CalculateTotal(List<string> calibrationValues)
+        {
+            int total = 0;
+            foreach (string calibrationValue in calibrationValues)
+            {
+                total += Calculate(calibrationValue);
+            }
+
+            return total;
+        }
+
         public static int Calculate(string calibrationValue)
         {
             var digitMatchingPattern = @"\d+";
