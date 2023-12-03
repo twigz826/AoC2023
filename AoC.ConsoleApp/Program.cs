@@ -1,4 +1,5 @@
 ﻿using AoC.ConsoleApp.Day1;
+using AoC.ConsoleApp.Day2;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -9,7 +10,7 @@ var services = scope.ServiceProvider;
 
 try
 {
-    services.GetRequiredService<Day1App>().RunFirstChallenge();
+    services.GetRequiredService<Day2App>().RunFirstChallenge();
 }
 catch (Exception ex)
 {
@@ -22,5 +23,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
         .ConfigureServices((context, services) =>
         {
             services.AddTransient<Day1App>();
+            services.AddTransient<Day2App>();
         });
 }
