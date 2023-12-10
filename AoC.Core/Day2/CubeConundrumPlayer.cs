@@ -1,5 +1,4 @@
-﻿
-namespace AoC.Core.Day2
+﻿namespace AoC.Core.Day2
 {
     public static class CubeConundrumPlayer
     {
@@ -14,7 +13,7 @@ namespace AoC.Core.Day2
             {"green", GreenCubesMaximumNumber}
         };
 
-        public static int PlayGames(List<CubeConundrumGame> ccGames)
+        public static int ProcessValidGames(List<CubeConundrumGame> ccGames)
         {
             var total = 0;
 
@@ -30,6 +29,36 @@ namespace AoC.Core.Day2
             }
 
             return total;
+        }
+
+        public static int CalculateMinNumberOfCubesForGame(List<CubeConundrumGame> ccGames)
+        {
+            var total = 0;
+            foreach (var game in ccGames)
+            {
+                total += ProductOfMinNumberOfCubes(game);
+            }
+
+            return total;
+        }
+
+        private static int ProductOfMinNumberOfCubes(CubeConundrumGame game)
+        {
+            var redMinNumber = GetMinNumberOfCubes("red", game);
+            var greenMinNumber = GetMinNumberOfCubes("green", game);
+            var blueMinNumber = GetMinNumberOfCubes("blue", game);
+            return redMinNumber * greenMinNumber * blueMinNumber;
+        }
+
+        private static int GetMinNumberOfCubes(string colour, CubeConundrumGame game)
+        {
+            var maxCubeValue = game.CubeDraws
+                .Where(draw => draw.ContainsKey(colour))
+                .Select(draw => draw[colour])
+                .DefaultIfEmpty(0)
+                .Max();
+
+            return maxCubeValue;
         }
 
         private static void ValidateGame(CubeConundrumGame game)

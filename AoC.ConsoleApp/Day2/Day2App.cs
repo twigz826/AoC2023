@@ -9,7 +9,7 @@ namespace AoC.ConsoleApp.Day2
 
         public List<CubeConundrumGame> CubeConundrumGames = new();
 
-        public void RunFirstChallenge()
+        public void RunChallenges()
         {
             Console.WriteLine("Puzzle input values. Enter 'end' when all values have been entered\nValues: ");
 
@@ -27,9 +27,11 @@ namespace AoC.ConsoleApp.Day2
 
             var mappedGameInputData = ParseInput(GameHistory);
 
-            var validGames = CubeConundrumPlayer.PlayGames(mappedGameInputData);
-
+            var validGames = CubeConundrumPlayer.ProcessValidGames(mappedGameInputData);
             Console.WriteLine($"Valid games: {validGames}");
+
+            var minCubeNumberToPlayGame = CubeConundrumPlayer.CalculateMinNumberOfCubesForGame(mappedGameInputData);
+            Console.WriteLine($"Product of min cube numbers: {minCubeNumberToPlayGame}");
         }
 
         private List<CubeConundrumGame> ParseInput(List<string?> puzzleInput)

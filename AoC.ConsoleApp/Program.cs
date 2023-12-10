@@ -10,7 +10,7 @@ var services = scope.ServiceProvider;
 
 try
 {
-    services.GetRequiredService<Day2App>().RunFirstChallenge();
+    services.GetRequiredService<Day2App>().RunChallenges();
 }
 catch (Exception ex)
 {
