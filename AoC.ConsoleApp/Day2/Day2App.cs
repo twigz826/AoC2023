@@ -1,4 +1,5 @@
 ﻿using AoC.Core.Day2;
+using AoC.Core.Helpers;
 using System.Text.RegularExpressions;
 
 namespace AoC.ConsoleApp.Day2
@@ -17,7 +18,7 @@ namespace AoC.ConsoleApp.Day2
             {
                 var puzzleInput = Console.ReadLine();
 
-                if (IsInputComplete(puzzleInput))
+                if (InputHelper.IsInputComplete(puzzleInput))
                 {
                     break;
                 }
@@ -82,11 +83,6 @@ namespace AoC.ConsoleApp.Day2
             return Regex.Split(game, "(Game\\s\\d+:)")
                         .Where(s => !string.IsNullOrWhiteSpace(s))
                         .ToList();
-        }
-
-        private static bool IsInputComplete(string? input)
-        {
-            return input?.ToLower() == "end";
         }
     }
 }

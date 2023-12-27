@@ -1,4 +1,5 @@
 ﻿using AoC.Core.Day1;
+using AoC.Core.Helpers;
 
 namespace AoC.ConsoleApp.Day1
 {
@@ -14,7 +15,7 @@ namespace AoC.ConsoleApp.Day1
             {
                 var calibrationValue = Console.ReadLine();
 
-                if (IsInputComplete(calibrationValue))
+                if (InputHelper.IsInputComplete(calibrationValue))
                 {
                     break;
                 }
@@ -33,11 +34,6 @@ namespace AoC.ConsoleApp.Day1
             {
                 CalibrationValues.Add(calibrationValue);
             }
-        }
-
-        private static bool IsInputComplete(string? input)
-        {
-            return input?.ToLower() == "end";
         }
     }
 }
