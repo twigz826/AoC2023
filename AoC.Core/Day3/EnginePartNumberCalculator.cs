@@ -8,7 +8,6 @@ namespace AoC.Core.Day3
 
         public static int CalculateSumOfPartNumbers(List<string> engineSchematic)
         {
-            var total = 0;
             List<int> separatedNumbers = new();
 
             var patternToFindPartNumbers = @$"((?<=[{SpecialCharacters}])\d+|\d+(?=[{SpecialCharacters}]))";
@@ -16,45 +15,48 @@ namespace AoC.Core.Day3
 
             for (var index = 0; index < engineSchematic.Count; index++)
             {
-                List<int> masterMatchedIndexes = new();
                 var matches = Regex.Matches(engineSchematic[index], patternToFindPartNumbers);
 
                 if (matches.Any())
                 {
                     foreach (Match match in matches.Cast<Match>())
                     {
-                        var numberString = Regex.Replace(match.Value, patternToStripSpecialCharacters, "");
-                        separatedNumbers.Add(int.Parse(numberString));
-
-                        var numberIndex = match.Index;
-                        masterMatchedIndexes.Add(numberIndex);
+                        separatedNumbers.Add(GetNumberFromMatch(match.Value, patternToStripSpecialCharacters));
                     }
                 }
 
                 if (!IsSingleLineInput(engineSchematic.Count))
                 {
-                    if (IsFirstLine(index))
-                    {
-                        separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index + 1], index, masterMatchedIndexes));
-                    }
-                    else if (IsLastLine(index, engineSchematic.Count - 1))
-                    {
-                        separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index - 1], index, masterMatchedIndexes));
-                    }
-                    else
-                    {
-                        separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index - 1], index, masterMatchedIndexes));
-                        separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index + 1], index, masterMatchedIndexes));
-                    }
+                    separatedNumbers = AddNumbersFromAdjacentLines(index, separatedNumbers, engineSchematic);
                 }
             }
 
-            foreach (var num in separatedNumbers)
+            return separatedNumbers.Sum();
+        }
+
+        private static List<int> AddNumbersFromAdjacentLines(int index, List<int> separatedNumbers, List<string> engineSchematic)
+        {
+            if (IsFirstLine(index))
             {
-                total += num;
+                separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index + 1]));
+            }
+            else if (IsLastLine(index, engineSchematic.Count - 1))
+            {
+                separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index - 1]));
+            }
+            else
+            {
+                separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index - 1]));
+                separatedNumbers.AddRange(GetMatchingNumbersFromLine(engineSchematic[index], engineSchematic[index + 1]));
             }
 
-            return total;
+            return separatedNumbers;
+        }
+
+        private static int GetNumberFromMatch(string value, string patternToStripSpecialCharacters)
+        {
+            var numberString = Regex.Replace(value, patternToStripSpecialCharacters, "");
+            return int.Parse(numberString);
         }
 
         private static bool IsSingleLineInput(int engineSchematicCount)
@@ -62,24 +64,24 @@ namespace AoC.Core.Day3
             return engineSchematicCount == 1;
         }
 
-        private static List<int> GetMatchingNumbersFromLine(string engineSchematicLine, string adjacentLine, int index, List<int> masterMatchedIndexes)
+        private static List<int> GetMatchingNumbersFromLine(string engineSchematicLine, string adjacentLine)
         {
             var specialCharIndexesLineBelow = FindSpecialCharacterIndexes(adjacentLine);
             var numberIndexes = FindAllNumberIndexes(engineSchematicLine);
 
             var currentMatchingIndexes = FindMatchingIndexes(specialCharIndexesLineBelow, numberIndexes);
-            return ExtractNumbersAtIndexes(engineSchematicLine, currentMatchingIndexes, masterMatchedIndexes);
+            return ExtractNumbersAtIndexes(engineSchematicLine, currentMatchingIndexes);
         }
 
-        private static List<int> ExtractNumbersAtIndexes(string engineSchematicLine, List<int> matchingIndexes, List<int> masterMatchedIndexes)
+        private static List<int> ExtractNumbersAtIndexes(string engineSchematicLine, List<int> matchingIndexes)
         {
             List<int> numbers = new();
             List<(int start, int end)> extractedRanges = new();
 
-            foreach (int index in matchingIndexes)
+            foreach (var index in matchingIndexes)
             {
-                int start = index;
-                int end = index;
+                var start = index;
+                var end = index;
 
                 while (start > 0 && char.IsDigit(engineSchematicLine[start - 1]))
                 {
@@ -96,24 +98,14 @@ namespace AoC.Core.Day3
                     var range = (start, end);
                     if (!extractedRanges.Contains(range))
                     {
-                        int number = int.Parse(engineSchematicLine[start..end]);
+                        var number = int.Parse(engineSchematicLine[start..end]);
                         numbers.Add(number);
                         extractedRanges.Add(range);
                     }
                 }
             }
 
-            AddCurrentMatchingIndexesToMaster(extractedRanges, masterMatchedIndexes);
-
             return numbers;
-        }
-
-        private static void AddCurrentMatchingIndexesToMaster(List<(int start, int end)> extractedRanges, List<int> masterMatchedIndexes)
-        {
-            foreach ((int start, _) in extractedRanges)
-            {
-                masterMatchedIndexes.Add(start);
-            }
         }
 
         private static List<int> FindMatchingIndexes(List<int> specialCharIndexes, List<int> numberIndexes)
@@ -134,7 +126,7 @@ namespace AoC.Core.Day3
         {
             List<int> indexes = new();
 
-            for (int i = 0; i < schematicLine.Length; i++)
+            for (var i = 0; i < schematicLine.Length; i++)
             {
                 if (char.IsDigit(schematicLine[i]))
                 {
