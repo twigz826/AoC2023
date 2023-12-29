@@ -5,13 +5,47 @@ namespace AoC.Core.Day3
     public static class EnginePartNumberCalculator
     {
         private static readonly string SpecialCharacters = "#*&%$=@/+-";
+        private static readonly string PatternToStripSpecialCharacters = @"^\D|\D$";
+        private static readonly string NumberMatchingPattern = @"\d+";
+        private static readonly string AsteriskMatchingPattern = @"\*";
+
+        public static int CalculateGearRatio(List<string> engineSchematic)
+        {
+            var total = 0;
+            for (var index = 0; index < engineSchematic.Count; index++)
+            {
+                var asteriskMatches = GetAsteriskMatches(engineSchematic[index]);
+
+                foreach (var asteriskMatch in asteriskMatches)
+                {
+                    string? prevRow = null;
+                    string? nextRow = null;
+                    if (index > 0)
+                    {
+                        prevRow = engineSchematic[index - 1];
+                    }
+                    if (index < engineSchematic.Count - 1)
+                    {
+                        nextRow = engineSchematic[index + 1];
+                    }
+
+                    var matchedNumbers = RetrieveAdjacentNumbers(asteriskMatch, engineSchematic[index], prevRow, nextRow);
+
+                    if (matchedNumbers.Count == 2)
+                    {
+                        total += matchedNumbers[0] * matchedNumbers[1];
+                    }
+                }
+            }
+
+            return total;
+        }
 
         public static int CalculateSumOfPartNumbers(List<string> engineSchematic)
         {
             List<int> separatedNumbers = new();
 
-            var patternToFindPartNumbers = @$"((?<=[{SpecialCharacters}])\d+|\d+(?=[{SpecialCharacters}]))";
-            var patternToStripSpecialCharacters = @"^\D|\D$";
+            var patternToFindPartNumbers = GetRegexPatternToMatchWholeNumbers(SpecialCharacters);
 
             for (var index = 0; index < engineSchematic.Count; index++)
             {
@@ -21,7 +55,7 @@ namespace AoC.Core.Day3
                 {
                     foreach (Match match in matches.Cast<Match>())
                     {
-                        separatedNumbers.Add(GetNumberFromMatch(match.Value, patternToStripSpecialCharacters));
+                        separatedNumbers.Add(GetNumberFromMatch(match.Value, PatternToStripSpecialCharacters));
                     }
                 }
 
@@ -32,6 +66,48 @@ namespace AoC.Core.Day3
             }
 
             return separatedNumbers.Sum();
+        }
+
+        private static List<int> GetAsteriskMatches(string engineSchematicLine)
+        {
+            List<int> matches = new();
+            for (var index = 0; index < engineSchematicLine.Length; index++)
+            {
+                if (Regex.IsMatch(engineSchematicLine[index].ToString(), @"\*"))
+                {
+                    matches.Add(index);
+                }
+            }
+            return matches;
+        }
+
+        private static List<int> RetrieveAdjacentNumbers(int asteriskIndex, string currentRow, string? previousRow, string? nextRow)
+        {
+            List<int> adjacentNumbers = new();
+
+            var rowNumberMatches = Regex.Matches(currentRow, NumberMatchingPattern).ToList();
+
+            if (previousRow != null)
+            {
+                rowNumberMatches.AddRange(Regex.Matches(previousRow, NumberMatchingPattern));
+            }
+            if (nextRow != null)
+            {
+                rowNumberMatches.AddRange(Regex.Matches(nextRow, NumberMatchingPattern));
+            }
+
+            var adjacentNums = rowNumberMatches
+                .Where(row => asteriskIndex >= row.Index - 1 && asteriskIndex <= (row.Index + row.Length))
+                .Select(match => int.Parse(match.Value));
+
+            adjacentNumbers.AddRange(adjacentNums);
+
+            return adjacentNumbers;
+        }
+
+        private static string GetRegexPatternToMatchWholeNumbers(string pattern)
+        {
+            return @$"((?<=[{pattern}])\d+|\d+(?=[{pattern}]))";
         }
 
         private static List<int> AddNumbersFromAdjacentLines(int index, List<int> separatedNumbers, List<string> engineSchematic)
@@ -66,7 +142,7 @@ namespace AoC.Core.Day3
 
         private static List<int> GetMatchingNumbersFromLine(string engineSchematicLine, string adjacentLine)
         {
-            var specialCharIndexesLineBelow = FindSpecialCharacterIndexes(adjacentLine);
+            var specialCharIndexesLineBelow = FindSpecialCharacterIndexes(adjacentLine, SpecialCharacters);
             var numberIndexes = FindAllNumberIndexes(engineSchematicLine);
 
             var currentMatchingIndexes = FindMatchingIndexes(specialCharIndexesLineBelow, numberIndexes);
@@ -137,13 +213,13 @@ namespace AoC.Core.Day3
             return indexes;
         }
 
-        private static List<int> FindSpecialCharacterIndexes(string schematicLine)
+        private static List<int> FindSpecialCharacterIndexes(string schematicLine, string characterRegexPattern)
         {
             List<int> indexes = new();
 
             for (int i = 0; i < schematicLine.Length; i++)
             {
-                if (SpecialCharacters.Contains(schematicLine[i]))
+                if (characterRegexPattern.Contains(schematicLine[i]))
                 {
                     indexes.Add(i);
                 }

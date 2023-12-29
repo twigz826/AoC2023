@@ -80,7 +80,7 @@ namespace AoC.ConsoleApp.Day2
 
         private List<string> SplitIntoGames(string? game)
         {
-            return Regex.Split(game, "(Game\\s\\d+:)")
+            return Regex.Split(game!, "(Game\\s\\d+:)")
                         .Where(s => !string.IsNullOrWhiteSpace(s))
                         .ToList();
         }

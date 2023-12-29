@@ -111,5 +111,53 @@ namespace AoC.Test.Day3
             var sumOfPartNumbers = EnginePartNumberCalculator.CalculateSumOfPartNumbers(input);
             sumOfPartNumbers.Should().Be(expectedOutput);
         }
+
+        [Fact]
+        public void CalculateGearRatio_WhenGivenANumberString_Returns0()
+        {
+            var input = new List<string> { "112" };
+            var expectedOutput = 0;
+            var gearRatio = EnginePartNumberCalculator.CalculateGearRatio(input);
+            gearRatio.Should().Be(expectedOutput);
+        }
+
+        [Fact]
+        public void CalculateGearRatio_WhenGivenANumberStringWithOneAdjacentAsterisk_Returns0()
+        {
+            var input = new List<string> { "112*" };
+            var expectedOutput = 0;
+            var gearRatio = EnginePartNumberCalculator.CalculateGearRatio(input);
+            gearRatio.Should().Be(expectedOutput);
+        }
+
+        [Fact]
+        public void CalculateGearRatio_WhenGivenTwoNumbersWithAnAdjacentAsterisk_ReturnsTheProductOfTheNumbers()
+        {
+            var input = new List<string> { "112*10" };
+            var expectedOutput = 1120;
+            var gearRatio = EnginePartNumberCalculator.CalculateGearRatio(input);
+            gearRatio.Should().Be(expectedOutput);
+        }
+
+        [Fact]
+        public void CalculateGearRatio_WhenGivenAStringWithTwoLines_ReturnsTheGearRatio()
+        {
+            var input = new List<string> { "....573.613......",
+                                           ".......*........." };
+            var expectedOutput = 573 * 613;
+            var sumOfPartNumbers = EnginePartNumberCalculator.CalculateGearRatio(input);
+            sumOfPartNumbers.Should().Be(expectedOutput);
+        }
+
+        [Fact]
+        public void CalculateGearRatio_WhenGivenAStringWithThreeLines_ReturnsTheGearRatio()
+        {
+            var input = new List<string> { "....573..........",
+                                           ".......*.........",
+                                           ".34....9....#1..."};
+            var expectedOutput = 573 * 9;
+            var sumOfPartNumbers = EnginePartNumberCalculator.CalculateGearRatio(input);
+            sumOfPartNumbers.Should().Be(expectedOutput);
+        }
     }
 }

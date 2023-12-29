@@ -5,7 +5,7 @@ namespace AoC.ConsoleApp.Day3
 {
     public class Day3App
     {
-        public List<string> words = new();
+        public List<string> schematicLines = new();
 
         public void RunChallenges()
         {
@@ -20,12 +20,13 @@ namespace AoC.ConsoleApp.Day3
                     break;
                 }
 
-                words.Add(puzzleInput!);
+                schematicLines.Add(puzzleInput!);
             }
 
-            var engineSchematicNumbers = EnginePartNumberCalculator.CalculateSumOfPartNumbers(words);
+            var engineSchematicNumbers = EnginePartNumberCalculator.CalculateSumOfPartNumbers(schematicLines);
+            var gearRatioTotal = EnginePartNumberCalculator.CalculateGearRatio(schematicLines);
 
-            Console.WriteLine(engineSchematicNumbers);
+            Console.WriteLine(gearRatioTotal);
         }
     }
 }
