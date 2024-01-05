@@ -11,6 +11,9 @@ namespace AoC.ConsoleApp.Day4
 
             var scratchCardTotal = ScratchCardSolver.CalculatePointsTotal(input);
             Console.WriteLine(scratchCardTotal);
+
+            var numberOfScratchCardsWon = ScratchCardSolver.CalculateScratchCardsWon(input);
+            Console.WriteLine(numberOfScratchCardsWon);
         }
     }
 }
